@@ -32,12 +32,12 @@ const users = [];
 wss.on("connection", function connection(ws) {
   ws.on("error", console.error);
 
-  ws.on("message", function message(data: string) {
-    const dataJSON = JSON.parse(data);
-    if (dataJSON.type === "reg") {
-      const dataDataJSON = JSON.parse(dataJSON.data);
-      console.log("received: %s", dataJSON, dataDataJSON);
-      users.push(dataDataJSON);
+  ws.on("message", function message(message: string) {
+    const parsedMessage = JSON.parse(message);
+    const data = JSON.parse(parsedMessage.data);
+    if (parsedMessage.type === "reg") {
+      console.log("received: %s", parsedMessage, data);
+      users.push(data);
     }
   });
 
