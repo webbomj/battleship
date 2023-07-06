@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as http from "http";
-import { WebSocketServer } from "ws";
+import WebSocket, { WebSocketServer } from "ws";
 
 export const httpServer = http.createServer(function (req, res) {
   const __dirname = path.resolve(path.dirname(""));
@@ -20,20 +20,25 @@ export const httpServer = http.createServer(function (req, res) {
 
 export const server = http.createServer(function (req, res) {
   res.writeHead(200);
-  res.end(data);
+  res.end();
 });
 
 server.listen(3000);
 
 const wss = new WebSocketServer({ server });
 
+const users = [];
+
 wss.on("connection", function connection(ws) {
   ws.on("error", console.error);
 
-  ws.on("message", function message(data) {
+  ws.on("message", function message(data: string) {
     const dataJSON = JSON.parse(data);
-    const dataDataJSON = JSON.parse(dataJSON.data);
-    console.log("received: %s", dataJSON, dataDataJSON);
+    if (dataJSON.type === "reg") {
+      const dataDataJSON = JSON.parse(dataJSON.data);
+      console.log("received: %s", dataJSON, dataDataJSON);
+      users.push(dataDataJSON);
+    }
   });
 
   //   ws.send("something");
