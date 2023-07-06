@@ -1,10 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as http from "http";
-import WebSocket, { WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
 
 import { registerUser } from "./controllers/registerUser/registerUser";
-import { RequestType } from "./interfaces/server.interface";
+import { createRoom } from "./controllers/createRoom/createRoom";
+import { RequestType, WebSocketApp } from "./interfaces/server.interface";
 
 export const httpServer = http.createServer(function (req, res) {
   const __dirname = path.resolve(path.dirname(""));
@@ -32,17 +33,20 @@ const wss = new WebSocketServer({ server });
 
 const users = [];
 
-wss.on("connection", function connection(ws: WebSocket) {
+wss.on("connection", function connection(ws: WebSocketApp) {
   ws.on("error", console.error);
 
   ws.on("message", function message(message: string) {
     const parsedMessage = JSON.parse(message);
-    const data = JSON.parse(parsedMessage.data);
+    console.log(parsedMessage);
     switch (parsedMessage.type) {
       case RequestType.REG:
+        const data = JSON.parse(parsedMessage.data);
         registerUser(data, ws);
         break;
-
+      case RequestType.CREATEROOM:
+        createRoom(ws, wss);
+        break;
       default:
         break;
     }
