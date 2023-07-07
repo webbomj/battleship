@@ -1,10 +1,10 @@
 import WebSocket from "ws";
-import { WebSocketServer } from "ws";
-import http from "node:http";
 
 export enum RequestType {
   REG = "reg",
   CREATEROOM = "create_room",
+  ADDUSERTOROOM = "add_user_to_room",
+  CREATEGAME = "create_game",
 }
 
 export interface WebSocketApp extends WebSocket {

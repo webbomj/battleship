@@ -12,3 +12,13 @@ export interface IRoomUsers {
   name: string;
   index: number;
 }
+
+export interface IRoomUsers {
+  name: string;
+  index: number;
+}
+
+export interface IGame {
+  gameId: number;
+  roomUsers: IRoomUsers[];
+}

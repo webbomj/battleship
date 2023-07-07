@@ -5,6 +5,7 @@ import { WebSocketServer } from "ws";
 
 import { registerUser } from "./controllers/registerUser/registerUser";
 import { createRoom } from "./controllers/createRoom/createRoom";
+import { createGame } from "./controllers/createGame/createGame";
 import { RequestType, WebSocketApp } from "./interfaces/server.interface";
 
 export const httpServer = http.createServer(function (req, res) {
@@ -31,8 +32,6 @@ server.listen(3000);
 
 const wss = new WebSocketServer({ server });
 
-const users = [];
-
 wss.on("connection", function connection(ws: WebSocketApp) {
   ws.on("error", console.error);
 
@@ -41,11 +40,15 @@ wss.on("connection", function connection(ws: WebSocketApp) {
     console.log(parsedMessage);
     switch (parsedMessage.type) {
       case RequestType.REG:
-        const data = JSON.parse(parsedMessage.data);
-        registerUser(data, ws);
+        const userData = JSON.parse(parsedMessage.data);
+        registerUser(userData, ws);
         break;
       case RequestType.CREATEROOM:
         createRoom(ws, wss);
+        break;
+      case RequestType.ADDUSERTOROOM:
+        const gameData = JSON.parse(parsedMessage.data);
+        createGame(ws, gameData.indexRoom, wss);
         break;
       default:
         break;
