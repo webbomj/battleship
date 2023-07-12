@@ -10,17 +10,20 @@ export const createRoom = (ws: WebSocketApp, wss: WebSocketServer) => {
   const roomResponse = createRoomResponse(ws?.userId);
   ws.roomId = roomResponse.roomId;
 
-  ws.send(
-    JSON.stringify({
-      type: "update_room",
-      data: JSON.stringify(roomResponse),
-      id: 0,
-    })
-  );
-
   const freeRooms = getFreeRooms();
 
-  wss.clients.forEach((client) => {
+  // ws.send(
+  //   JSON.stringify({
+  //     type: "update_room",
+  //     data: JSON.stringify(freeRooms),
+  //     id: 0,
+  //   })
+  // );
+
+  
+
+  (wss.clients as Set<WebSocketApp>).forEach((client) => {
+    // client.roomId = roomResponse.roomId;
     client.send(
       JSON.stringify({
         type: "update_room",

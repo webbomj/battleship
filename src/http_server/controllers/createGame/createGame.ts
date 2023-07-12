@@ -1,7 +1,9 @@
 import { RequestType, WebSocketApp } from "../../interfaces/server.interface";
-import { addUserToRoom, rooms } from "../../store/rooms";
+import { addRoom, addUserToRoom, rooms } from "../../store/rooms";
 import { addGame, games } from "../../store/games";
 import { WebSocket, WebSocketServer } from "ws";
+import { getFreeRooms } from "../../services/room/roomService";
+import { startShipsData } from "../../store/ships";
 
 export const createGame = (
   ws: WebSocketApp,
@@ -9,6 +11,7 @@ export const createGame = (
   wss: WebSocketServer
 ) => {
   const currentUserId = ws?.userId;
+  ws.roomId = indexRoom;
   const currentRoom = rooms.find((room) => room.roomId === indexRoom);
   const firstPlayerId = currentRoom.roomUsers[0].index;
 
@@ -20,15 +23,30 @@ export const createGame = (
     const gameId = games.length + 1;
     addGame(gameId, currentRoom.roomUsers);
 
+    const freeRooms = getFreeRooms();
+
     ws.send(
       JSON.stringify({
         type: RequestType.CREATEGAME,
         data: JSON.stringify({
           idGame: gameId,
+          idPlayer: 1
         }),
         id: 0,
       })
     );
+
+    (wss.clients as Set<WebSocketApp>).forEach((client) => {
+      client.send(
+        JSON.stringify({
+          type: RequestType.UPDATEROOM,
+          data: JSON.stringify(
+            freeRooms
+          ),
+          id: 0,
+        })
+      );
+  });
 
     (wss.clients as Set<WebSocketApp>).forEach((client) => {
       if (client.userId === firstPlayerId) {
@@ -37,11 +55,13 @@ export const createGame = (
             type: RequestType.CREATEGAME,
             data: JSON.stringify({
               idGame: gameId,
+              idPlayer: 0
             }),
             id: 0,
           })
         );
       }
     });
+    
   }
 };

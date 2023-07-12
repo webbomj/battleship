@@ -14,4 +14,6 @@ export const addUserToRoom = (roomId: number, userId: number) => {
   currentRoom.roomUsers = [...currentRoom.roomUsers, adaptUser];
   const roomsWithoutCurrent = rooms.filter((room) => room.roomId !== roomId);
   rooms = [...roomsWithoutCurrent, currentRoom];
+
+  console.log('roooms now: ', rooms[0].roomUsers)
 };

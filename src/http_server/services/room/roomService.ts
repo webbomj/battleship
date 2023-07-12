@@ -16,5 +16,5 @@ export const createRoomResponse = (userId: number): IRooms => {
 };
 
 export const getFreeRooms = (): IRooms[] => {
-  return rooms.filter((room) => room.roomUsers.length < 2);
+  return rooms
 };

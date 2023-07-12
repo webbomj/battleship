@@ -6,6 +6,7 @@ import { WebSocketServer } from "ws";
 import { registerUser } from "./controllers/registerUser/registerUser";
 import { createRoom } from "./controllers/createRoom/createRoom";
 import { createGame } from "./controllers/createGame/createGame";
+import { addShips } from "./controllers/addShips/addShips";
 import { RequestType, WebSocketApp } from "./interfaces/server.interface";
 
 export const httpServer = http.createServer(function (req, res) {
@@ -49,6 +50,10 @@ wss.on("connection", function connection(ws: WebSocketApp) {
       case RequestType.ADDUSERTOROOM:
         const gameData = JSON.parse(parsedMessage.data);
         createGame(ws, gameData.indexRoom, wss);
+        break;
+      case RequestType.ADDSHIPS:
+        const shipsData = JSON.parse(parsedMessage.data);
+        addShips(ws, shipsData, wss);
         break;
       default:
         break;
